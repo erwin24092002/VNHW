@@ -1,0 +1,1 @@
+CUDA_VISIBLE_DEVICES=0 python lib/OpenOCR/tools/train_rec.py --c ./configs/vit_parseq.yml

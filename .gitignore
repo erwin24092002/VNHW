@@ -1,0 +1,55 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+*.egg
+*.pyo
+
+# === Environment ===
+.env
+.venv/
+venv/
+env/
+*.env
+
+# === Jupyter / Logs ===
+.ipynb_checkpoints/
+*.log
+
+# === Data ===
+data/
+datasets/
+*.csv
+*.tsv
+*.jsonl
+*.zip
+*.tar
+*.tar.gz
+
+# === Model Checkpoints ===
+*.pt
+*.pth
+*.ckpt
+checkpoints/
+runs/
+outputs/
+logs/
+
+# === Temporary ===
+tmp/
+temp/
+*.tmp
+*.bak
+.DS_Store
+
+# === IDE / OS ===
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+
+# === Generated Artifacts ===
+results/
+export/
+inference_output/
