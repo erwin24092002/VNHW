@@ -132,6 +132,7 @@ class LMDBDataSet(Dataset):
             return self.__getitem__(np.random.randint(self.__len__()))
         img, label = sample_info
         data = {'image': img, 'label': label}
+        # print("label:", label)
         data['ext_data'] = self.get_ext_data()
         outs = transform(data, self.ops)
         if outs is None:

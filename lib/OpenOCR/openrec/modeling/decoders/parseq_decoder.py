@@ -170,7 +170,7 @@ class PARSeqDecoder(nn.Module):
     def __init__(self,
                  in_channels,
                  out_channels,
-                 max_label_length=160,
+                 max_label_length=15,
                  embed_dim=384,
                  dec_num_heads=12,
                  dec_mlp_ratio=4,

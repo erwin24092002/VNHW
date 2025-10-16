@@ -16,18 +16,12 @@ def checkImageIsValid(imageBin):
     h, w = img.shape
     return h * w > 0
 
-
 def writeCache(env, cache):
     with env.begin(write=True) as txn:
         for k, v in cache.items():
             txn.put(k, v)
 
-
 def collect_samples(data_dir):
-    """
-    Duyệt toàn bộ thư mục data_dir, đọc các file label.json
-    Trả về list [(image_path, label_text), ...]
-    """
     samples = []
     for sample_id in os.listdir(data_dir):
         sample_path = os.path.join(data_dir, sample_id)
@@ -49,28 +43,17 @@ def collect_samples(data_dir):
 
 
 def createDataset(root_dir, outputPath, split="train_data", checkValid=True):
-    """
-    Convert dataset thành LMDB.
-    ARGS:
-        root_dir   : thư mục chứa train_data/, test_data/
-        outputPath : thư mục lưu LMDB
-        split      : 'train_data' hoặc 'test_data'
-    """
     input_dir = os.path.join(root_dir, split)
     os.makedirs(outputPath, exist_ok=True)
-
     print(f"Scanning {input_dir} ...")
     samples = collect_samples(input_dir)
     print(f"Found {len(samples)} samples in {split}")
-
     env = lmdb.open(outputPath, map_size=1099511627776)
     cache = {}
     cnt = 1
-
     for img_path, label in samples:
         with open(img_path, "rb") as f:
             imageBin = f.read()
-
         if checkValid:
             try:
                 if not checkImageIsValid(imageBin):
@@ -79,17 +62,14 @@ def createDataset(root_dir, outputPath, split="train_data", checkValid=True):
             except Exception as e:
                 print(f"Error validating {img_path}: {e}")
                 continue
-
         imageKey = f"image-{cnt:09d}".encode()
         labelKey = f"label-{cnt:09d}".encode()
         cache[imageKey] = imageBin
         cache[labelKey] = label.encode("utf-8")
-
         if cnt % 1000 == 0:
             writeCache(env, cache)
             cache = {}
             print(f"Written {cnt} / {len(samples)}")
-
         cnt += 1
 
     cache["num-samples".encode()] = str(cnt - 1).encode()

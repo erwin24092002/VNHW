@@ -22,12 +22,7 @@ def collect_labels(data_dir):
 
 
 def create_character_dict(root_dir, output_path="character_dict.txt"):
-    """
-    Tạo file character_dict.txt từ toàn bộ dữ liệu.
-    Mỗi ký tự xuất hiện trong các label.json sẽ là 1 dòng trong file.
-    """
     char_set = set()
-
     for split in ["train_data", "test_data"]:
         split_dir = os.path.join(root_dir, split)
         if not os.path.exists(split_dir):
@@ -37,16 +32,13 @@ def create_character_dict(root_dir, output_path="character_dict.txt"):
         for text in texts:
             for ch in text:
                 char_set.add(ch)
-
     sorted_chars = sorted(list(char_set))
-
     os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:
         for ch in sorted_chars:
             if ch == "\n":
                 continue
             f.write(ch + "\n")
-
     print(f"Saved {len(sorted_chars)} unique characters to {output_path}")
 
 

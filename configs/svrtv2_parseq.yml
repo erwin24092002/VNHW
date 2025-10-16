@@ -1,32 +1,33 @@
 Global:
   device: gpu
-  epoch_num: 20
-  log_smooth_window: 20
-  print_batch_step: 10
-  output_dir: ./output/rec/u14m_filter/svtrv2_parseq
+  epoch_num: 500
+  log_smooth_window: 50
+  print_batch_step: 100
+  output_dir: outputs/svtrv2_parseq
   eval_epoch_step: [0, 1]
   eval_batch_step: [0, 500]
-  cal_metric_during_train: True
-  pretrained_model:
-  checkpoints:
-  use_tensorboard: false
-  infer_img:
+  save_epoch_step: [15, 9999]
+  cal_metric_during_train: False
+  pretrained_model: outputs/svtrv2_parseq/best.pth
+  checkpoints: 
+  use_tensorboard: False
+  infer_img: data/data_raw/UIT_HWDB_word/train_data/1
   # for data or label process
-  character_dict_path: &character_dict_path ./tools/utils/EN_symbol_dict.txt
-  max_text_length: &max_text_length 25
+  character_dict_path: &character_dict_path data/character_dict/uit_hwdb_word.txt
+  max_text_length: &max_text_length 15
   use_space_char: &use_space_char False
   use_amp: True
-  save_res_path: ./output/rec/u14m_filter/predicts_svtrv2_parseq.txt
+  save_res_path: outputs/svtrv2_parseq/predicts_svtrv2_parseq.txt
 
 Optimizer:
   name: AdamW
-  lr: 0.00065 # 4gpus 256bs/gpu
+  lr: 0.00003 #0.00065 # 4gpus 256bs/gpu
   weight_decay: 0.05
-  filter_bias_and_bn: True
+  filter_bias_and_bn: False
 
 LRScheduler:
   name: OneCycleLR
-  warmup_epoch: 1.5 # pct_start 0.075*20 = 1.5ep
+  warmup_epoch: 5 # pct_start 0.075*20 = 1.5ep
   cycle_momentum: False
 
 Architecture:
@@ -42,11 +43,11 @@ Architecture:
     mixer: [['Conv','Conv','Conv','Conv','Conv','Conv'],['Conv','Conv','FGlobal','Global','Global','Global'],['Global','Global','Global','Global','Global','Global']]
     local_k: [[5, 5], [5, 5], [-1, -1]]
     sub_k: [[1, 1], [2, 1], [-1, -1]]
-    last_stage: false
+    last_stage: False
   Decoder:
     name: PARSeqDecoder
     decode_ar: True
-    refine_iters: 1
+    refine_iters: 0
     only_attn: False
 
 Loss:
@@ -60,23 +61,20 @@ PostProcess:
 Metric:
   name: RecMetric
   main_indicator: acc
-  is_filter: True
+  is_filter: False
 
 Train:
   dataset:
     name: RatioDataSetTVResize
     ds_width: True
-    padding: false
-    data_dir_list: ['../Union14M-L-LMDB-Filtered/filter_filter_train_challenging',
-    '../Union14M-L-LMDB-Filtered/filter_filter_train_hard',
-    '../Union14M-L-LMDB-Filtered/filter_filter_train_medium',
-    '../Union14M-L-LMDB-Filtered/filter_filter_train_normal',
-    '../Union14M-L-LMDB-Filtered/filter_filter_train_easy',
+    padding: False
+    data_dir_list: [
+      data/data_lmdb/train,
     ]
     transforms:
       - DecodeImagePIL: # load image
           img_mode: RGB
-      - PARSeqAugPIL:
+      # - PARSeqAugPIL:
       - ARLabelEncode: # Class handling label
           character_dict_path: *character_dict_path
           use_space_char: *use_space_char
@@ -85,9 +83,9 @@ Train:
           keep_keys: ['image', 'label', 'length'] # dataloader will return list in this order
   sampler:
     name: RatioSampler
-    scales: [[128, 32]] # w, h
+    scales: [[192, 64]] # w, h
     # divide_factor: to ensure the width and height dimensions can be devided by downsampling multiple
-    first_bs: &bs 256
+    first_bs: &bs 130
     fix_bs: false
     divided_factor: [4, 16] # w, h
     is_training: True
@@ -104,13 +102,8 @@ Eval:
     ds_width: True
     padding: False
     data_dir_list: [
-      '../evaluation/CUTE80',
-      '../evaluation/IC13_857',
-      '../evaluation/IC15_1811',
-      '../evaluation/IIIT5k',
-      '../evaluation/SVT',
-      '../evaluation/SVTP',
-      ]
+      data/data_lmdb/test,
+    ]
     transforms:
       - DecodeImagePIL: # load image
           img_mode: RGB
@@ -122,7 +115,7 @@ Eval:
           keep_keys: ['image', 'label', 'length'] # dataloader will return list in this order
   sampler:
     name: RatioSampler
-    scales: [[128, 32]] # w, h
+    scales: [[192, 64]] # w, h
     # divide_factor: to ensure the width and height dimensions can be devided by downsampling multiple
     first_bs: *bs
     fix_bs: false

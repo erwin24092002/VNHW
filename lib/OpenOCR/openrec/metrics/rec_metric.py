@@ -74,6 +74,8 @@ class RecMetric(object):
         all_num = 0
         norm_edit_dis = 0.0
         for (pred, pred_conf), (target, _) in zip(preds, labels):
+            print("pred :", pred)
+            print("target:", target)
             if self.stream:
                 assert len(labels) == 1
                 pred, _ = stream_match(preds)
@@ -121,8 +123,9 @@ class RecMetric(object):
                 assert len(labels) == 1
                 pred, _ = stream_match(preds)
             if pred == target:
+                
                 correct_num_real += 1
-
+            
             if pred.lower() == target.lower():
                 correct_num_lower += 1
 

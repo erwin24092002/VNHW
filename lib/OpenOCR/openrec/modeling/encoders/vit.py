@@ -11,7 +11,7 @@ class ViT(nn.Module):
 
     def __init__(
         self,
-        img_size=[32, 576],
+        img_size=[64, 192],
         patch_size=[4, 8],
         in_channels=3,
         out_channels=256,

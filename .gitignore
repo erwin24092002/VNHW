@@ -34,7 +34,7 @@ datasets/
 *.ckpt
 checkpoints/
 runs/
-outputs/
+# outputs/
 logs/
 
 # === Temporary ===
