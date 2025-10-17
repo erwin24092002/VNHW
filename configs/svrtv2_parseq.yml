@@ -11,7 +11,7 @@ Global:
   pretrained_model: outputs/svtrv2_parseq/best.pth
   checkpoints: 
   use_tensorboard: False
-  infer_img: data/data_raw/UIT_HWDB_word/train_data/1
+  infer_img: data/data_raw/UIT_HWDB_word/test_data/250
   # for data or label process
   character_dict_path: &character_dict_path data/character_dict/uit_hwdb_word.txt
   max_text_length: &max_text_length 15
